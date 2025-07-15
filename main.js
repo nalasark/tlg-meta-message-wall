@@ -20,9 +20,9 @@ document.body.appendChild(app.view);
 
 // Preload bubble images
 const bubbleImages = [
-	{ name: 'heart', url: 'assets/heart.png' },
-	{ name: 'earth', url: 'assets/earth.png' },
-    { name: 'speech', url: 'assets/speech2.png' }
+	{ name: 'heart', url: 'assets/heart?v=1.0.0.png' },
+	{ name: 'earth', url: 'assets/earth?v=1.0.0.png' },
+    { name: 'speech', url: 'assets/speech2?v=1.0.1.png' }
 ];
 const bubbleTextures = {};
 
