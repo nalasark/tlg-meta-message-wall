@@ -73,7 +73,7 @@ function startApp() {
 				const ny = dy / dist;
 
 				// Soft repulsion if too close
-				const minDist = b1.radius + b2.radius + 30;
+				const minDist = b1.radius + b2.radius + 35;
 				if (dist < minDist && dist > 1) {
 					const push = (minDist - dist) * 0.005;
 					b1.velocity.x += nx * push;
@@ -213,6 +213,7 @@ class Bubble {
 		const textStyle = {
 			fontFamily: 'Montserrat, Arial, sans-serif', // Gotham-like
 			fontSize: 14,
+			fontWeight: 'bold',
 			fill: 0xffffff, // white text
 			align: 'center',
 			wordWrap: true,
