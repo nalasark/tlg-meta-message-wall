@@ -109,8 +109,10 @@ function startApp() {
 		.onSnapshot(snapshot => {
 			snapshot.docChanges().forEach(change => {
 				if (change.type === "added") {
-					const text = change.doc.data().message;
-					addBubble(text);
+					const data = change.doc.data();
+					const text = data.message;
+					const colorValue = data.colour || 1;
+					addBubble(text, colorValue);
 				}
 			});
 		});
@@ -174,9 +176,16 @@ function truncateTextToFit(text, style, maxWidth, maxHeight) {
 	return ellipsis; // fallback if nothing fits
 }
 
+// Color mapping for message bubbles
+const bubbleColors = {
+    1: 0x0082fb, // Meta blue
+    2: 0x6f4cff, // Meta purple
+    3: 0x00c6b7  // Meta teal
+};
+
 // Bubble class
 class Bubble {
-	constructor(text) {
+	constructor(text, colorValue) {
 		this.radius = 100;
 		this.sprite = new PIXI.Container();
 
@@ -206,6 +215,9 @@ class Bubble {
 		imgSprite.y = 0;
 		// Add slight random rotation between -25 and 25 degrees
 		imgSprite.rotation = (Math.random() * 10 - 5) * (Math.PI / 180);
+		// Tint the image based on colorValue
+		const colorKey = colorValue && bubbleColors[colorValue] ? colorValue : 1;
+		imgSprite.tint = bubbleColors[colorKey];
 		this.sprite.addChild(imgSprite);
 
 		// Get text area for this shape
@@ -276,7 +288,7 @@ class Bubble {
 	}
 }
 
-function addBubble(text) {
+function addBubble(text, colorValue) {
 	if (!text || text.length < 1) return;
 
 	// Remove loading message on first bubble
@@ -290,6 +302,6 @@ function addBubble(text) {
 		const old = bubbles.shift();
 		old.destroy();
 	}
-	const bubble = new Bubble(text);
+	const bubble = new Bubble(text, colorValue);
 	bubbles.push(bubble);
 }
