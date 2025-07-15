@@ -136,7 +136,7 @@ const MAX_BUBBLES = 100;
 const shapeTextAreas = {
   heart:  { width: 120, height: 100, center: { x: 0, y: 0 } },
   earth:  { width: 120, height: 120, center: { x: 0, y: 0 } },
-  speech: { width: 120, height: 120, center: { x: 0, y: -10 } }
+  speech: { width: 140, height: 130, center: { x: 0, y: -10 } }
 };
 
 // Truncate text to fit area with ellipsis
@@ -212,7 +212,7 @@ class Bubble {
 		const area = shapeTextAreas[this.shapeType] || { width: 120, height: 60, center: { x: 0, y: 0 } };
 		const textStyle = {
 			fontFamily: 'Montserrat, Arial, sans-serif', // Gotham-like
-			fontSize: 20,
+			fontSize: 15,
 			fill: 0xffffff, // white text
 			align: 'center',
 			wordWrap: true,
