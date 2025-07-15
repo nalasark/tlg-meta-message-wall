@@ -73,9 +73,9 @@ function startApp() {
 				const ny = dy / dist;
 
 				// Soft repulsion if too close
-				const minDist = b1.radius + b2.radius + 75;
+				const minDist = b1.radius + b2.radius + 50;
 				if (dist < minDist && dist > 1) {
-					const push = (minDist - dist) * 0.01;
+					const push = (minDist - dist) * 0.008;
 					b1.velocity.x += nx * push;
 					b1.velocity.y += ny * push;
 					b2.velocity.x -= nx * push;
