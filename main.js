@@ -44,8 +44,17 @@ async function setup() {
 	startApp();
 }
 
+// Wait for Montserrat font to load before starting the app
+async function waitForFont(fontFamily) {
+    await document.fonts.load(`1em ${fontFamily}`);
+    await document.fonts.ready;
+}
 
-setup();
+// Start the app only after the font is loaded
+(async () => {
+    await waitForFont('Montserrat');
+    setup();
+})();
 
 function startApp() {
 	// Animate
