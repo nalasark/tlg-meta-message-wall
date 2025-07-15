@@ -73,9 +73,9 @@ function startApp() {
 				const ny = dy / dist;
 
 				// Soft repulsion if too close
-				const minDist = b1.radius + b2.radius + 50;
+				const minDist = b1.radius + b2.radius + 40;
 				if (dist < minDist && dist > 1) {
-					const push = (minDist - dist) * 0.008;
+					const push = (minDist - dist) * 0.007;
 					b1.velocity.x += nx * push;
 					b1.velocity.y += ny * push;
 					b2.velocity.x -= nx * push;
@@ -183,6 +183,9 @@ const bubbleColors = {
     3: 0x00c6b7  // Meta teal
 };
 
+// Rotation range for bubbles (in degrees)
+const BUBBLE_ROTATION_RANGE = 5;
+
 // Bubble class
 class Bubble {
 	constructor(text, colorValue) {
@@ -213,8 +216,8 @@ class Bubble {
 		imgSprite.height = imgSprite.texture.height * scale;
 		imgSprite.x = 0;
 		imgSprite.y = 0;
-		// Add slight random rotation between -15 and 15 degrees
-		imgSprite.rotation = (Math.random() * 30 - 15) * (Math.PI / 180);
+		// Add slight random rotation between -BUBBLE_ROTATION_RANGE and BUBBLE_ROTATION_RANGE degrees
+		imgSprite.rotation = (Math.random() * 2 * BUBBLE_ROTATION_RANGE - BUBBLE_ROTATION_RANGE) * (Math.PI / 180);
 		// Tint the image based on colorValue
 		const colorKey = colorValue && bubbleColors[colorValue] ? colorValue : 1;
 		imgSprite.tint = bubbleColors[colorKey];
