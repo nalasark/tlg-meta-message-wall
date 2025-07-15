@@ -22,7 +22,7 @@ document.body.appendChild(app.view);
 const bubbleImages = [
 	{ name: 'heart', url: 'assets/heart.png' },
 	{ name: 'earth', url: 'assets/earth.png' },
-    { name: 'speech', url: 'assets/speech.png' }
+    { name: 'speech', url: 'assets/speech2.png' }
 ];
 const bubbleTextures = {};
 
@@ -73,9 +73,9 @@ function startApp() {
 				const ny = dy / dist;
 
 				// Soft repulsion if too close
-				const minDist = b1.radius + b2.radius + 35;
+				const minDist = b1.radius + b2.radius + 75;
 				if (dist < minDist && dist > 1) {
-					const push = (minDist - dist) * 0.005;
+					const push = (minDist - dist) * 0.01;
 					b1.velocity.x += nx * push;
 					b1.velocity.y += ny * push;
 					b2.velocity.x -= nx * push;
@@ -213,8 +213,8 @@ class Bubble {
 		imgSprite.height = imgSprite.texture.height * scale;
 		imgSprite.x = 0;
 		imgSprite.y = 0;
-		// Add slight random rotation between -25 and 25 degrees
-		imgSprite.rotation = (Math.random() * 10 - 5) * (Math.PI / 180);
+		// Add slight random rotation between -15 and 15 degrees
+		imgSprite.rotation = (Math.random() * 30 - 15) * (Math.PI / 180);
 		// Tint the image based on colorValue
 		const colorKey = colorValue && bubbleColors[colorValue] ? colorValue : 1;
 		imgSprite.tint = bubbleColors[colorKey];
