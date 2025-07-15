@@ -182,7 +182,7 @@ class Bubble {
 
 		// Randomly pick a shape type for now
 		const shapeTypes = Object.keys(bubbleTextures);
-		this.shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+		this.shapeType = "speech";
 		let imgSprite;
 		switch (this.shapeType) {
 			case 'heart':
@@ -213,7 +213,7 @@ class Bubble {
 		const textStyle = {
 			fontFamily: 'Montserrat, Arial, sans-serif', // Gotham-like
 			fontSize: 20,
-			fill: 0x000000,
+			fill: 0xffffff, // white text
 			align: 'center',
 			wordWrap: true,
 			wordWrapWidth: area.width
