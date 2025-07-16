@@ -138,42 +138,49 @@ const MAX_BUBBLES = 100;
 const shapeTextAreas = {
   heart:  { width: 120, height: 100, center: { x: 0, y: 0 } },
   earth:  { width: 120, height: 120, center: { x: 0, y: 0 } },
-  speech: { width: 160, height: 140, center: { x: 0, y: -10 } }
+  speech: { width: 160, height: 110, center: { x: 0, y: -10 } }
 };
 
-// Truncate text to fit area with ellipsis
-function truncateTextToFit(text, style, maxWidth, maxHeight) {
-	const testText = new PIXI.Text('', style);
-	testText.style.wordWrap = true;
-	testText.style.wordWrapWidth = maxWidth;
-	testText.visible = false;
-	app.stage.addChild(testText);
+// Fit text with dynamic font size, then truncate if needed
+function fitTextWithDynamicFont(text, baseStyle, maxWidth, maxHeight, minFontSize, maxFontSize) {
+    let fontSize = maxFontSize;
+    let displayText = text;
+    let style = { ...baseStyle, fontSize };
+    let testText = new PIXI.Text('', style);
+    testText.style.wordWrap = true;
+    testText.style.wordWrapWidth = maxWidth;
+    testText.visible = false;
+    app.stage.addChild(testText);
 
-	let truncated = text;
-	let ellipsis = '...';
-	let maxLen = text.length;
+    // Try to fit with decreasing font size
+    while (fontSize >= minFontSize) {
+        style.fontSize = fontSize;
+        testText.style = style;
+        testText.text = text;
+        if (testText.height <= maxHeight && testText.width <= maxWidth) {
+            app.stage.removeChild(testText);
+            return { displayText: text, fontSize };
+        }
+        fontSize--;
+    }
 
-	// Check full text first
-	testText.text = text;
-	if (testText.height <= maxHeight && testText.width <= maxWidth) {
-		app.stage.removeChild(testText);
-		return text; // fits, no truncation needed
-	}
-
-	// Start trimming from end until it fits
-	while (maxLen > 0) {
-		truncated = text.slice(0, maxLen) + ellipsis;
-		testText.text = truncated;
-
-		if (testText.height <= maxHeight && testText.width <= maxWidth) {
-			app.stage.removeChild(testText);
-			return truncated;
-		}
-		maxLen--;
-	}
-
-	app.stage.removeChild(testText);
-	return ellipsis; // fallback if nothing fits
+    // If still doesn't fit, truncate with ellipsis at minFontSize
+    style.fontSize = minFontSize;
+    testText.style = style;
+    let truncated = text;
+    let ellipsis = '...';
+    let maxLen = text.length;
+    while (maxLen > 0) {
+        truncated = text.slice(0, maxLen) + ellipsis;
+        testText.text = truncated;
+        if (testText.height <= maxHeight && testText.width <= maxWidth) {
+            app.stage.removeChild(testText);
+            return { displayText: truncated, fontSize: minFontSize };
+        }
+        maxLen--;
+    }
+    app.stage.removeChild(testText);
+    return { displayText: ellipsis, fontSize: minFontSize };
 }
 
 // Color mapping for message bubbles
@@ -225,17 +232,18 @@ class Bubble {
 
 		// Get text area for this shape
 		const area = shapeTextAreas[this.shapeType] || { width: 120, height: 60, center: { x: 0, y: 0 } };
-		const textStyle = {
+		const baseTextStyle = {
 			fontFamily: 'Montserrat, Arial, sans-serif', // Gotham-like
-			fontSize: 14,
 			fontWeight: 'bold',
 			fill: 0xffffff, // white text
 			align: 'center',
 			wordWrap: true,
 			wordWrapWidth: area.width
 		};
-		// Truncate text to fit
-		const displayText = truncateTextToFit(text, textStyle, area.width, area.height);
+		const { displayText, fontSize } = fitTextWithDynamicFont(
+			text, baseTextStyle, area.width, area.height, 10, 16
+		);
+		const textStyle = { ...baseTextStyle, fontSize };
 		const message = new PIXI.Text(displayText, textStyle);
 		message.anchor.set(0.5);
 		message.x = area.center?.x ?? 0;
