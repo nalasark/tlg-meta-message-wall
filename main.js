@@ -241,7 +241,7 @@ class Bubble {
 			wordWrapWidth: area.width
 		};
 		const { displayText, fontSize } = fitTextWithDynamicFont(
-			text, baseTextStyle, area.width, area.height, 10, 16
+			text, baseTextStyle, area.width, area.height, 10, 16 
 		);
 		const textStyle = { ...baseTextStyle, fontSize };
 		const message = new PIXI.Text(displayText, textStyle);
