@@ -112,7 +112,9 @@ function startApp() {
 					const data = change.doc.data();
 					const text = data.message;
 					const colorValue = data.colour || 1;
-					addBubble(text, colorValue);
+					addBubble(text, colorValue, change.doc.id);
+				} else if (change.type === "removed") {
+					removeBubbleByDocId(change.doc.id);
 				}
 			});
 		});
@@ -132,6 +134,7 @@ app.stage.addChild(loadingText);
 
 // Bubble storage
 const bubbles = [];
+const bubbleMap = new Map(); // docId -> Bubble
 const MAX_BUBBLES = 100;
 
 // Define text area for each shape, including text center offset
@@ -195,9 +198,10 @@ const BUBBLE_ROTATION_RANGE = 5;
 
 // Bubble class
 class Bubble {
-	constructor(text, colorValue) {
+	constructor(text, colorValue, docId) {
 		this.radius = 100;
 		this.sprite = new PIXI.Container();
+		this.docId = docId;
 
 		// Randomly pick a shape type for now
 		const shapeTypes = Object.keys(bubbleTextures);
@@ -294,12 +298,29 @@ class Bubble {
 		);
 	}
 
+	// Animate scale down and remove
+	animateRemove(onDone) {
+		const sprite = this.sprite;
+		let scale = 1;
+		const shrink = () => {
+			scale *= 0.85;
+			sprite.scale.set(scale);
+			if (scale > 0.05) {
+				requestAnimationFrame(shrink);
+			} else {
+				app.stage.removeChild(sprite);
+				if (onDone) onDone();
+			}
+		};
+		shrink();
+	}
+
 	destroy() {
 		app.stage.removeChild(this.sprite);
 	}
 }
 
-function addBubble(text, colorValue) {
+function addBubble(text, colorValue, docId) {
 	if (!text || text.length < 1) return;
 
 	// Remove loading message on first bubble
@@ -308,11 +329,23 @@ function addBubble(text, colorValue) {
 		loadingText = null;
 	}
 
-	// No more gibberish, just use the original text
 	if (bubbles.length >= MAX_BUBBLES) {
 		const old = bubbles.shift();
 		old.destroy();
+		if (old.docId) bubbleMap.delete(old.docId);
 	}
-	const bubble = new Bubble(text, colorValue);
+	const bubble = new Bubble(text, colorValue, docId);
 	bubbles.push(bubble);
+	if (docId) bubbleMap.set(docId, bubble);
+}
+
+function removeBubbleByDocId(docId) {
+	const bubble = bubbleMap.get(docId);
+	if (bubble) {
+		bubble.animateRemove(() => {
+			const idx = bubbles.indexOf(bubble);
+			if (idx !== -1) bubbles.splice(idx, 1);
+			bubbleMap.delete(docId);
+		});
+	}
 }
